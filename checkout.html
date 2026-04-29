@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>結帳｜好客商城・三義木雕</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wood-dark: #3d2b1f;
+    --wood-mid: #7a4f2e;
+    --wood-light: #c8935a;
+    --wood-pale: #e8d5b7;
+    --cream: #faf6ef;
+    --warm-white: #fffdf9;
+    --accent-gold: #b8902a;
+    --accent-moss: #5c6b3a;
+    --text-dark: #2a1f15;
+    --text-mid: #5a4535;
+    --text-light: #9a8070;
+    --shadow-warm: rgba(61, 43, 31, 0.15);
+    --error: #c0392b;
+    --success: #27ae60;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--warm-white);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* ===== CHECKOUT NAV ===== */
+  .checkout-nav {
+    background: var(--wood-dark);
+    padding: 0 5vw;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .checkout-nav-logo {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.05rem;
+    color: var(--cream);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
+  .checkout-nav-logo span { color: var(--accent-gold); }
+  .checkout-nav-back {
+    font-size: 0.8rem;
+    color: rgba(232,213,183,0.7);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .checkout-nav-back:hover { color: var(--wood-light); }
+
+  /* ===== STEP INDICATOR ===== */
+  .steps-bar {
+    background: var(--cream);
+    border-bottom: 1px solid var(--wood-pale);
+    padding: 18px 5vw;
+    display: flex;
+    justify-content: center;
+  }
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 600px;
+    width: 100%;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    position: relative;
+    cursor: default;
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--wood-pale);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    background: white;
+    transition: all 0.4s;
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+  }
+  .step.active .step-num {
+    background: var(--wood-dark);
+    border-color: var(--wood-dark);
+    color: var(--cream);
+  }
+  .step.done .step-num {
+    background: var(--accent-moss);
+    border-color: var(--accent-moss);
+    color: white;
+  }
+  .step-label {
+    font-size: 0.68rem;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .step.active .step-label { color: var(--wood-dark); font-weight: 500; }
+  .step.done .step-label { color: var(--accent-moss); }
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--wood-pale);
+    margin-bottom: 22px;
+    transition: background 0.4s;
+  }
+  .step-line.done { background: var(--accent-moss); }
+
+  /* ===== MAIN LAYOUT ===== */
+  .checkout-main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 5vw 80px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  /* ===== FORM PANEL ===== */
+  .form-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Step pages */
+  .step-page { display: none; }
+  .step-page.active { display: block; }
+
+  .panel-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--wood-dark);
+    margin-bottom: 0.4rem;
+  }
+  .panel-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* Form sections */
+  .form-section {
+    background: white;
+    border: 1px solid var(--wood-pale);
+    margin-bottom: 20px;
+  }
+  .form-section-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--wood-pale);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .form-section-icon { font-size: 1rem; }
+  .form-section-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--wood-dark);
+    letter-spacing: 0.05em;
+  }
+  .form-section-body { padding: 20px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .form-group { display: flex; flex-direction: column; }
+  .form-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .form-label .req { color: var(--error); }
+  .form-input {
+    padding: 11px 14px;
+    border: 1px solid var(--wood-pale);
+    background: var(--warm-white);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .form-input:focus {
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(184,144,42,0.1);
+  }
+  .form-input.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.08);
+  }
+  .form-error {
+    font-size: 0.68rem;
+    color: var(--error);
+    margin-top: 4px;
+    display: none;
+  }
+  .form-error.show { display: block; }
+
+  .form-select {
+    padding: 11px 14px;
+    border: 1px solid var(--wood-pale);
+    background: var(--warm-white);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text-dark);
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a8070' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  .form-select:focus { border-color: var(--accent-gold); outline: none; }
+
+  /* Radio cards for delivery/payment */
+  .option-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 2px solid var(--wood-pale);
+    cursor: pointer;
+    transition: all 0.25s;
+    background: white;
+    position: relative;
+  }
+  .option-card:hover { border-color: var(--wood-light); }
+  .option-card.selected {
+    border-color: var(--wood-dark);
+    background: rgba(61,43,31,0.03);
+  }
+  .option-card input[type="radio"] {
+    margin-top: 2px;
+    accent-color: var(--wood-dark);
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .option-card-icon { font-size: 1.4rem; }
+  .option-card-info { flex: 1; }
+  .option-card-label {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--wood-dark);
+    margin-bottom: 3px;
+  }
+  .option-card-desc {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+  .option-card-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--wood-dark);
+    font-weight: 700;
+    white-space: nowrap;
+    margin-left: auto;
+    padding-left: 12px;
+  }
+  .option-card-badge {
+    position: absolute;
+    top: -1px; right: -1px;
+    background: var(--accent-gold);
+    color: white;
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Credit card input styled */
+  .cc-field { position: relative; }
+  .cc-icons {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 4px;
+    font-size: 1.1rem;
+  }
+
+  /* Coupon row */
+  .coupon-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .coupon-row .form-input { flex: 1; }
+  .coupon-apply-btn {
+    background: var(--wood-dark);
+    color: var(--cream);
+    border: none;
+    padding: 11px 20px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.3s;
+    white-space: nowrap;
+  }
+  .coupon-apply-btn:hover { background: var(--wood-mid); }
+  .coupon-result {
+    font-size: 0.75rem;
+    margin-top: 6px;
+    display: none;
+    padding: 8px 12px;
+  }
+  .coupon-result.ok { color: var(--success); background: rgba(39,174,96,0.08); display: block; }
+  .coupon-result.fail { color: var(--error); background: rgba(192,57,43,0.08); display: block; }
+
+  /* Review step items */
+  .review-items { display: flex; flex-direction: column; gap: 0; }
+  .review-item {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--wood-pale);
+    align-items: center;
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-thumb {
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+  }
+  .review-item-name {
+    font-size: 0.88rem;
+    color: var(--wood-dark);
+    font-family: 'Noto Serif TC', serif;
+    margin-bottom: 3px;
+  }
+  .review-item-meta {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+  }
+  .review-item-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--wood-dark);
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .review-info-block {
+    background: var(--cream);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-left: 3px solid var(--accent-gold);
+  }
+  .review-info-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .review-info-content {
+    font-size: 0.85rem;
+    color: var(--text-mid);
+    line-height: 1.8;
+  }
+
+  /* Nav buttons */
+  .step-nav {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .btn-next {
+    flex: 1;
+    background: var(--wood-dark);
+    color: var(--cream);
+    border: none;
+    padding: 16px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-next:hover {
+    background: var(--wood-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--shadow-warm);
+  }
+  .btn-back-step {
+    background: white;
+    color: var(--text-mid);
+    border: 1px solid var(--wood-pale);
+    padding: 16px 24px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-back-step:hover { border-color: var(--wood-mid); color: var(--wood-dark); }
+
+  /* ===== ORDER SUMMARY SIDEBAR ===== */
+  .order-sidebar {
+    position: sticky;
+    top: 24px;
+  }
+  .sidebar-panel {
+    background: white;
+    border: 1px solid var(--wood-pale);
+    margin-bottom: 16px;
+  }
+  .sidebar-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--wood-pale);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.95rem;
+    color: var(--wood-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sidebar-toggle {
+    font-size: 0.72rem;
+    color: var(--accent-gold);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'Noto Sans TC', sans-serif;
+    letter-spacing: 0.06em;
+  }
+  .sidebar-items {
+    padding: 0 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    transition: max-height 0.4s;
+  }
+  .sidebar-items.collapsed { max-height: 0; overflow: hidden; padding: 0 20px; }
+
+  .sidebar-item {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--wood-pale);
+    font-size: 0.82rem;
+  }
+  .sidebar-item:last-child { border-bottom: none; }
+  .sidebar-item-icon {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    border-radius: 2px;
+  }
+  .sidebar-item-name { color: var(--wood-dark); line-height: 1.4; }
+  .sidebar-item-qty { font-size: 0.7rem; color: var(--text-light); }
+  .sidebar-item-price {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--wood-dark);
+    white-space: nowrap;
+  }
+
+  .sidebar-breakdown {
+    padding: 16px 20px;
+    border-top: 1px solid var(--wood-pale);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--text-mid);
+  }
+  .breakdown-row.total {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    color: var(--wood-dark);
+    font-weight: 500;
+    padding-top: 12px;
+    border-top: 1px solid var(--wood-pale);
+    margin-top: 2px;
+  }
+  .breakdown-row.total span:last-child {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+  }
+  .breakdown-row.discount { color: var(--accent-moss); }
+
+  /* Secure badges */
+  .secure-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    border-top: 1px solid var(--wood-pale);
+  }
+  .secure-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== SUCCESS PAGE ===== */
+  #successPage {
+    display: none;
+    max-width: 640px;
+    margin: 60px auto;
+    padding: 0 5vw;
+    text-align: center;
+  }
+  .success-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .success-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--wood-dark);
+    margin-bottom: 0.5rem;
+  }
+  .success-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+  .order-number {
+    background: var(--cream);
+    border: 1px solid var(--wood-pale);
+    padding: 20px 28px;
+    margin-bottom: 2rem;
+    display: inline-block;
+    min-width: 300px;
+  }
+  .order-number-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .order-number-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--wood-dark);
+    letter-spacing: 0.1em;
+  }
+  .success-timeline {
+    background: white;
+    border: 1px solid var(--wood-pale);
+    padding: 24px;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+  .timeline-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .timeline-items { display: flex; flex-direction: column; gap: 0; }
+  .timeline-item {
+    display: flex;
+    gap: 14px;
+    padding-bottom: 20px;
+    position: relative;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .timeline-dot.done { background: var(--accent-moss); color: white; }
+  .timeline-dot.pending { background: var(--wood-pale); color: var(--text-mid); }
+  .timeline-dot.future { background: white; border: 2px solid var(--wood-pale); color: var(--text-light); }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 32px;
+    bottom: 0;
+    width: 1px;
+    background: var(--wood-pale);
+  }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-info { padding-top: 4px; }
+  .timeline-label { font-size: 0.85rem; color: var(--wood-dark); font-weight: 500; margin-bottom: 2px; }
+  .timeline-time { font-size: 0.72rem; color: var(--text-light); }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--wood-dark);
+    color: var(--cream);
+    padding: 14px 22px;
+    font-size: 0.82rem;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.35s;
+    border-left: 3px solid var(--accent-gold);
+    pointer-events: none;
+    max-width: 300px;
+    line-height: 1.6;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ===== LOADING OVERLAY ===== */
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(250,246,239,0.9);
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .loading-overlay.show { display: flex; }
+  .loading-spinner {
+    width: 48px; height: 48px;
+    border: 3px solid var(--wood-pale);
+    border-top-color: var(--wood-dark);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    color: var(--wood-dark);
+    letter-spacing: 0.1em;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 820px) {
+    .checkout-main { grid-template-columns: 1fr; }
+    .order-sidebar { position: static; }
+    .form-row { grid-template-columns: 1fr; }
+    .form-row.triple { grid-template-columns: 1fr; }
+  }
+
+  .form-hint {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--wood-pale);
+    margin: 16px 0;
+  }
+
+  /* Checkbox */
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .checkbox-row input[type="checkbox"] {
+    margin-top: 3px;
+    accent-color: var(--wood-dark);
+    width: 15px; height: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .checkbox-label {
+    font-size: 0.8rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- CHECKOUT NAV -->
+<nav class="checkout-nav">
+  <a class="checkout-nav-logo" href="index.html">好客商城 <span>·</span> 三義木雕</a>
+  <a class="checkout-nav-back" href="index.html">← 返回商城</a>
+</nav>
+
+<!-- STEPS BAR -->
+<div class="steps-bar">
+  <div class="steps">
+    <div class="step active" id="stepDot1">
+      <div class="step-num" id="stepNum1">1</div>
+      <div class="step-label">寄送資訊</div>
+    </div>
+    <div class="step-line" id="stepLine1"></div>
+    <div class="step" id="stepDot2">
+      <div class="step-num" id="stepNum2">2</div>
+      <div class="step-label">付款方式</div>
+    </div>
+    <div class="step-line" id="stepLine2"></div>
+    <div class="step" id="stepDot3">
+      <div class="step-num" id="stepNum3">3</div>
+      <div class="step-label">確認訂單</div>
+    </div>
+    <div class="step-line" id="stepLine3"></div>
+    <div class="step" id="stepDot4">
+      <div class="step-num" id="stepNum4">4</div>
+      <div class="step-label">完成</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CHECKOUT + SIDEBAR -->
+<div class="checkout-main" id="checkoutMain">
+
+  <!-- FORM PANEL -->
+  <div class="form-panel">
+
+    <!-- STEP 1: Shipping Info -->
+    <div class="step-page active" id="page1">
+      <div class="panel-title">寄送資訊</div>
+      <div class="panel-subtitle">請填寫收件人資訊，確保您的木雕作品安全抵達</div>
+
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="form-section-icon">👤</span>
+          <span class="form-section-title">收件人資訊</span>
+        </div>
+        <div class="form-section-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">姓名 <span class="req">*</span></label>
+              <input class="form-input" id="f-name" type="text" placeholder="王小明">
+              <div class="form-error" id="e-name">請填寫收件人姓名</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">聯絡電話 <span class="req">*</span></label>
+              <input class="form-input" id="f-phone" type="tel" placeholder="0912-345-678">
+              <div class="form-error" id="e-phone">請填寫有效的手機號碼</div>
+            </div>
+          </div>
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">電子郵件 <span class="req">*</span></label>
+              <input class="form-input" id="f-email" type="email" placeholder="example@email.com">
+              <div class="form-error" id="e-email">請填寫有效的電子郵件</div>
+              <div class="form-hint">訂單確認信與出貨通知將寄送至此信箱</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="form-section-icon">📦</span>
+          <span class="form-section-title">寄送方式</span>
+        </div>
+        <div class="form-section-body">
+          <div class="option-cards" id="deliveryOptions">
+            <label class="option-card selected" onclick="selectOption(this,'delivery')">
+              <input type="radio" name="delivery" value="home" checked>
+              <div class="option-card-icon">🏠</div>
+              <div class="option-card-info">
+                <div class="option-card-label">宅配到府</div>
+                <div class="option-card-desc">黑貓宅急便・3-5 個工作天抵達<br>三層防撞包裝，附保險</div>
+              </div>
+              <div class="option-card-price" id="homeDeliveryPrice">NT$120</div>
+            </label>
+            <label class="option-card" onclick="selectOption(this,'delivery')">
+              <input type="radio" name="delivery" value="cvs">
+              <div class="option-card-icon">🏪</div>
+              <div class="option-card-info">
+                <div class="option-card-label">超商取貨（7-11 / 全家）</div>
+                <div class="option-card-desc">5-7 個工作天・限重 5 公斤以下商品</div>
+              </div>
+              <div class="option-card-price">NT$60</div>
+            </label>
+            <label class="option-card" onclick="selectOption(this,'delivery')">
+              <input type="radio" name="delivery" value="pickup">
+              <div class="option-card-icon">🏔️</div>
+              <div class="option-card-info">
+                <div class="option-card-label">到店自取（三義展大雕刻行）</div>
+                <div class="option-card-desc">確認後 3 個工作天可取貨・現場可欣賞更多作品</div>
+              </div>
+              <div class="option-card-price">免費</div>
+              <div class="option-card-badge">推薦</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" id="addressSection">
+        <div class="form-section-head">
+          <span class="form-section-icon">📍</span>
+          <span class="form-section-title">收件地址</span>
+        </div>
+        <div class="form-section-body">
+          <div class="form-row triple">
+            <div class="form-group">
+              <label class="form-label">縣市 <span class="req">*</span></label>
+              <select class="form-select" id="f-city" onchange="updateDistrict()">
+                <option value="">選擇縣市</option>
+                <option>台北市</option><option>新北市</option><option>桃園市</option>
+                <option>台中市</option><option selected>苗栗縣</option><option>彰化縣</option>
+                <option>台南市</option><option>高雄市</option><option>宜蘭縣</option>
+              </select>
+              <div class="form-error" id="e-city">請選擇縣市</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">鄉鎮市區 <span class="req">*</span></label>
+              <select class="form-select" id="f-district">
+                <option value="">選擇區域</option>
+                <option>三義鄉</option><option>苗栗市</option><option>頭份市</option>
+              </select>
+              <div class="form-error" id="e-district">請選擇鄉鎮市區</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">郵遞區號</label>
+              <input class="form-input" id="f-zip" type="text" placeholder="367" maxlength="5">
+            </div>
+          </div>
+          <div class="form-row single" style="margin-bottom:0">
+            <div class="form-group">
+              <label class="form-label">詳細地址 <span class="req">*</span></label>
+              <input class="form-input" id="f-address" type="text" placeholder="xx路xx號x樓">
+              <div class="form-error" id="e-address">請填寫詳細地址</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="form-section-icon">✏️</span>
+          <span class="form-section-title">訂單備註（選填）</span>
+        </div>
+        <div class="form-section-body">
+          <div class="form-row single" style="margin:0">
+            <div class="form-group">
+              <textarea class="form-input" id="f-note" rows="3" placeholder="例如：請勿在外箱標示商品名稱、希望附上手寫卡片…" style="resize:vertical;line-height:1.7"></textarea>
+            </div>
+          </div>
+          <div class="checkbox-row" style="margin-top:12px">
+            <input type="checkbox" id="giftWrap">
+            <label class="checkbox-label" for="giftWrap">加購禮物包裝服務（附手寫祝福卡）+NT$150</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-next" onclick="goToStep(2)">繼續：選擇付款方式 →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Payment -->
+    <div class="step-page" id="page2">
+      <div class="panel-title">付款方式</div>
+      <div class="panel-subtitle">所有付款資訊均使用 SSL 加密傳輸，安全有保障</div>
+
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="form-section-icon">💳</span>
+          <span class="form-section-title">選擇付款方式</span>
+        </div>
+        <div class="form-section-body">
+          <div class="option-cards">
+            <label class="option-card selected" onclick="selectOption(this,'payment');showPaymentFields('cc')">
+              <input type="radio" name="payment" value="cc" checked>
+              <div class="option-card-icon">💳</div>
+              <div class="option-card-info">
+                <div class="option-card-label">信用卡／金融卡</div>
+                <div class="option-card-desc">支援 VISA、Mastercard、JCB・可申請分期付款</div>
+              </div>
+            </label>
+            <label class="option-card" onclick="selectOption(this,'payment');showPaymentFields('atm')">
+              <input type="radio" name="payment" value="atm">
+              <div class="option-card-icon">🏦</div>
+              <div class="option-card-info">
+                <div class="option-card-label">ATM 轉帳</div>
+                <div class="option-card-desc">下單後產生虛擬帳號，請於 3 日內完成轉帳</div>
+              </div>
+            </label>
+            <label class="option-card" onclick="selectOption(this,'payment');showPaymentFields('linepay')">
+              <input type="radio" name="payment" value="linepay">
+              <div class="option-card-icon">💚</div>
+              <div class="option-card-info">
+                <div class="option-card-label">LINE Pay</div>
+                <div class="option-card-desc">快速完成付款，享 LINE Points 回饋</div>
+              </div>
+              <div class="option-card-badge">推薦</div>
+            </label>
+            <label class="option-card" onclick="selectOption(this,'payment');showPaymentFields('cod')">
+              <input type="radio" name="payment" value="cod">
+              <div class="option-card-icon">💵</div>
+              <div class="option-card-info">
+                <div class="option-card-label">貨到付款</div>
+                <div class="option-card-desc">收貨時以現金付款・需加收手續費 NT$30・限宅配到府</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credit card fields -->
+      <div class="form-section" id="ccFields">
+        <div class="form-section-head">
+          <span class="form-section-icon">🔒</span>
+          <span class="form-section-title">信用卡資訊</span>
+        </div>
+        <div class="form-section-body">
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">持卡人姓名 <span class="req">*</span></label>
+              <input class="form-input" id="f-ccname" type="text" placeholder="王小明（請與卡片一致）">
+            </div>
+          </div>
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">卡號 <span class="req">*</span></label>
+              <div class="cc-field">
+                <input class="form-input" id="f-ccnum" type="text" placeholder="1234  5678  9012  3456" maxlength="19" oninput="formatCC(this)" style="padding-right:80px">
+                <div class="cc-icons">💳 🔒</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">有效期限 <span class="req">*</span></label>
+              <input class="form-input" id="f-ccexp" type="text" placeholder="MM / YY" maxlength="7" oninput="formatExp(this)">
+            </div>
+            <div class="form-group">
+              <label class="form-label">安全碼 CVV <span class="req">*</span></label>
+              <input class="form-input" id="f-cccvv" type="text" placeholder="●●●" maxlength="4" oninput="this.value=this.value.replace(/\D/g,'')">
+              <div class="form-hint">卡片背面三位數字</div>
+            </div>
+          </div>
+          <div class="form-row single" style="margin:0">
+            <div class="form-group">
+              <label class="form-label">分期期數</label>
+              <select class="form-select" id="f-installment">
+                <option value="1">不分期（全額付款）</option>
+                <option value="3">3 期（0 利率，限部分銀行）</option>
+                <option value="6">6 期（0 利率，限部分銀行）</option>
+                <option value="12">12 期（依各銀行利率計算）</option>
+              </select>
+            </div>
+          </div>
+          <div class="checkbox-row" style="margin-top:12px">
+            <input type="checkbox" id="saveCard">
+            <label class="checkbox-label" for="saveCard">儲存此卡片資訊，下次結帳更快速（演示功能）</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATM fields -->
+      <div class="form-section" id="atmFields" style="display:none">
+        <div class="form-section-head">
+          <span class="form-section-icon">🏦</span>
+          <span class="form-section-title">ATM 轉帳說明</span>
+        </div>
+        <div class="form-section-body">
+          <div style="background:var(--cream);padding:20px;border-left:3px solid var(--accent-gold);font-size:0.85rem;color:var(--text-mid);line-height:1.9">
+            下單完成後，系統將自動產生您的專屬虛擬帳號，並寄送至您的電子信箱。<br>
+            ✦ 請於 <strong style="color:var(--wood-dark)">3 個工作天內</strong>完成轉帳，逾期訂單將自動取消<br>
+            ✦ 轉帳完成後，請至會員中心上傳轉帳截圖以加速確認<br>
+            ✦ 確認入帳後，系統將立即安排出貨並寄送出貨通知
+          </div>
+        </div>
+      </div>
+
+      <!-- LINE Pay fields -->
+      <div class="form-section" id="linepayFields" style="display:none">
+        <div class="form-section-head">
+          <span class="form-section-icon">💚</span>
+          <span class="form-section-title">LINE Pay 付款</span>
+        </div>
+        <div class="form-section-body">
+          <div style="background:var(--cream);padding:20px;border-left:3px solid #06c755;font-size:0.85rem;color:var(--text-mid);line-height:1.9">
+            確認訂單後，您將被導向 LINE Pay 完成安全付款。<br>
+            ✦ 付款過程由 LINE Pay 處理，資訊安全有保障<br>
+            ✦ 可累積 LINE Points 回饋<br>
+            ✦ 付款完成後自動回到本站確認頁
+          </div>
+        </div>
+      </div>
+
+      <!-- COD fields -->
+      <div class="form-section" id="codFields" style="display:none">
+        <div class="form-section-head">
+          <span class="form-section-icon">💵</span>
+          <span class="form-section-title">貨到付款說明</span>
+        </div>
+        <div class="form-section-body">
+          <div style="background:var(--cream);padding:20px;border-left:3px solid var(--wood-light);font-size:0.85rem;color:var(--text-mid);line-height:1.9">
+            收到包裹時，請以現金支付給配送人員。<br>
+            ✦ 需加收 <strong style="color:var(--wood-dark)">NT$30 手續費</strong><br>
+            ✦ 僅限「宅配到府」寄送方式<br>
+            ✦ 請準備好零錢，配送人員未必有找零
+          </div>
+        </div>
+      </div>
+
+      <!-- Coupon section -->
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="form-section-icon">🎟️</span>
+          <span class="form-section-title">折扣碼 / VIP 優惠碼</span>
+        </div>
+        <div class="form-section-body" style="padding-bottom:16px">
+          <div class="coupon-row">
+            <input class="form-input" id="couponInput" type="text" placeholder="輸入折扣碼（如：VIPWOOD95）">
+            <button class="coupon-apply-btn" onclick="applyCoupon()">套用</button>
+          </div>
+          <div class="coupon-result" id="couponResult"></div>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-back-step" onclick="goToStep(1)">← 返回</button>
+        <button class="btn-next" onclick="goToStep(3)">繼續：確認訂單 →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Review -->
+    <div class="step-page" id="page3">
+      <div class="panel-title">確認訂單</div>
+      <div class="panel-subtitle">請仔細核對以下資訊，確認無誤後送出訂單</div>
+
+      <!-- Order items review -->
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="form-section-icon">🛍️</span>
+          <span class="form-section-title">訂購商品</span>
+        </div>
+        <div class="form-section-body" style="padding:0 20px">
+          <div class="review-items" id="reviewItems"></div>
+        </div>
+      </div>
+
+      <!-- Shipping review -->
+      <div class="review-info-block" id="reviewShipping"></div>
+
+      <!-- Payment review -->
+      <div class="review-info-block" id="reviewPayment"></div>
+
+      <!-- Final agreement -->
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="form-section-icon">📋</span>
+          <span class="form-section-title">訂購須知</span>
+        </div>
+        <div class="form-section-body">
+          <div style="font-size:0.8rem;color:var(--text-mid);line-height:1.9;margin-bottom:14px">
+            ✦ 木雕商品因為天然材料特性，紋理、色澤可能與圖片略有差異，此為正常現象<br>
+            ✦ 七天內如有瑕疵，提供全額退款（運費不退）；非瑕疵退貨需自行負擔運費<br>
+            ✦ 高單價商品（NT$10,000 以上）建議以信用卡付款，可申請分期降低負擔<br>
+            ✦ 訂單出貨後，系統將寄送黑貓宅配追蹤號碼至您的信箱
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="agreeTerms" onchange="toggleSubmit()">
+            <label class="checkbox-label" for="agreeTerms">
+              我已閱讀並同意<a href="#" style="color:var(--accent-gold)">服務條款</a>、<a href="#" style="color:var(--accent-gold)">退換貨政策</a>及<a href="#" style="color:var(--accent-gold)">隱私權政策</a>
+            </label>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="receiveNews" checked>
+            <label class="checkbox-label" for="receiveNews">訂閱最新木雕作品資訊與 VIP 優惠通知</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-back-step" onclick="goToStep(2)">← 返回</button>
+        <button class="btn-next" id="submitBtn" onclick="placeOrder()" disabled style="opacity:0.5;cursor:not-allowed">
+          確認下單 · 完成結帳
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /form-panel -->
+
+  <!-- ORDER SIDEBAR -->
+  <div class="order-sidebar" id="orderSidebar">
+    <div class="sidebar-panel">
+      <div class="sidebar-head">
+        訂單摘要
+        <button class="sidebar-toggle" id="sidebarToggleBtn" onclick="toggleSidebar()">收合 ▲</button>
+      </div>
+      <div class="sidebar-items" id="sidebarItems"></div>
+      <div class="sidebar-breakdown" id="sidebarBreakdown">
+        <div class="breakdown-row"><span>商品小計</span><span id="sb-subtotal">NT$0</span></div>
+        <div class="breakdown-row"><span>運費</span><span id="sb-shipping">NT$120</span></div>
+        <div class="breakdown-row discount" id="sb-discount-row" style="display:none">
+          <span>折扣優惠</span><span id="sb-discount">-NT$0</span>
+        </div>
+        <div class="breakdown-row" id="sb-giftrow" style="display:none">
+          <span>禮物包裝</span><span>+NT$150</span>
+        </div>
+        <div class="breakdown-row total">
+          <span>應付總金額</span>
+          <span id="sb-total">NT$0</span>
+        </div>
+      </div>
+      <div class="secure-badges">
+        <div class="secure-badge">🔒 SSL 加密</div>
+        <div class="secure-badge">🛡️ 安全交易</div>
+        <div class="secure-badge">↩️ 七天退換</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /checkout-main -->
+
+<!-- SUCCESS PAGE -->
+<div id="successPage">
+  <div class="success-icon">🎉</div>
+  <div class="success-title">訂單已送出！</div>
+  <div class="success-subtitle">
+    感謝您選購展大雕刻行的木藝作品 🌿<br>
+    我們的師傅正在為您的作品做最後的品質確認與包裝
+  </div>
+  <div class="order-number">
+    <div class="order-number-label">您的訂單編號</div>
+    <div class="order-number-val" id="orderNumDisplay"></div>
+  </div>
+  <div class="success-timeline">
+    <div class="timeline-title">後續流程</div>
+    <div class="timeline-items">
+      <div class="timeline-item">
+        <div class="timeline-dot done">✓</div>
+        <div class="timeline-info">
+          <div class="timeline-label">訂單確認</div>
+          <div class="timeline-time">剛剛完成・確認信已寄至您的信箱</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot pending">⋯</div>
+        <div class="timeline-info">
+          <div class="timeline-label">品質確認與包裝</div>
+          <div class="timeline-time">預計 1-2 個工作天完成三層防撞包裝</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot future">3</div>
+        <div class="timeline-info">
+          <div class="timeline-label">出貨通知</div>
+          <div class="timeline-time">寄出時將以 Email 及簡訊通知，附追蹤號碼</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot future">4</div>
+        <div class="timeline-info">
+          <div class="timeline-label">抵達您手中</div>
+          <div class="timeline-time">宅配預計 3-5 個工作天</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a href="index.html" style="background:var(--wood-dark);color:var(--cream);padding:14px 32px;text-decoration:none;font-family:'Noto Serif TC',serif;font-size:0.9rem;letter-spacing:0.08em;transition:background 0.3s" onmouseover="this.style.background='var(--wood-mid)'" onmouseout="this.style.background='var(--wood-dark)'">繼續購物</a>
+    <a href="#" onclick="window.print()" style="background:white;color:var(--wood-dark);padding:14px 32px;text-decoration:none;font-family:'Noto Sans TC',serif;font-size:0.85rem;letter-spacing:0.08em;border:1px solid var(--wood-pale);transition:border-color 0.3s" onmouseover="this.style.borderColor='var(--wood-mid)'" onmouseout="this.style.borderColor='var(--wood-pale)'">列印訂單</a>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">正在送出您的訂單…</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== CONSTANTS =====
+  const FREE_SHIPPING = 3000;
+  const SHIPPING_FEE = 120;
+  const VALID_COUPONS = {
+    'VIPWOOD95': { label:'VIP 95 折優惠', type:'percent', value:0.05 },
+    'WELCOME100': { label:'新會員折扣 NT$100', type:'fixed', value:100 },
+    'HAOKE50':   { label:'好客限定 NT$50 折', type:'fixed', value:50 },
+  };
+
+  let currentStep = 1;
+  let appliedCoupon = null;
+  let selectedDelivery = 'home';
+  let selectedPayment = 'cc';
+  let sidebarOpen = true;
+
+  // ===== READ CART FROM localStorage =====
+  function getCart() {
+    try { return JSON.parse(localStorage.getItem('haoke_cart') || '{}'); }
+    catch { return {}; }
+  }
+
+  function calcTotals() {
+    const cart = getCart();
+    const subtotal = Object.values(cart).reduce((s,i) => s + i.price * i.qty, 0);
+    let shipping = subtotal >= FREE_SHIPPING ? 0 : SHIPPING_FEE;
+    if (selectedDelivery === 'pickup') shipping = 0;
+    if (selectedDelivery === 'cvs') shipping = subtotal >= FREE_SHIPPING ? 0 : 60;
+    const giftWrap = document.getElementById('giftWrap')?.checked ? 150 : 0;
+    const codFee = selectedPayment === 'cod' ? 30 : 0;
+    let discount = 0;
+    if (appliedCoupon) {
+      if (appliedCoupon.type === 'percent') discount = Math.round(subtotal * appliedCoupon.value);
+      else discount = appliedCoupon.value;
+    }
+    const total = subtotal + shipping + giftWrap + codFee - discount;
+    return { subtotal, shipping, giftWrap, codFee, discount, total };
+  }
+
+  // ===== SIDEBAR RENDER =====
+  function renderSidebar() {
+    const cart = getCart();
+    const items = Object.values(cart);
+    const sidebarItems = document.getElementById('sidebarItems');
+    const { subtotal, shipping, giftWrap, codFee, discount, total } = calcTotals();
+
+    if (items.length === 0) {
+      sidebarItems.innerHTML = '<div style="padding:24px 0;text-align:center;color:var(--text-light);font-size:0.82rem">購物車是空的</div>';
+    } else {
+      sidebarItems.innerHTML = items.map(item => `
+        <div class="sidebar-item">
+          <div class="sidebar-item-icon" style="background:${item.bg}">${item.icon}</div>
+          <div>
+            <div class="sidebar-item-name">${item.name}</div>
+            <div class="sidebar-item-qty">× ${item.qty}</div>
+          </div>
+          <div class="sidebar-item-price">NT$${(item.price * item.qty).toLocaleString()}</div>
+        </div>`).join('');
+    }
+
+    document.getElementById('sb-subtotal').textContent = `NT$${subtotal.toLocaleString()}`;
+    document.getElementById('sb-shipping').textContent =
+      shipping === 0 ? '免費' : `NT$${shipping}`;
+
+    const discRow = document.getElementById('sb-discount-row');
+    discRow.style.display = discount > 0 ? 'flex' : 'none';
+    document.getElementById('sb-discount').textContent = `-NT$${discount.toLocaleString()}`;
+
+    const giftRow = document.getElementById('sb-giftrow');
+    giftRow.style.display = giftWrap > 0 ? 'flex' : 'none';
+
+    document.getElementById('sb-total').textContent = `NT$${total.toLocaleString()}`;
+
+    // Also update home delivery price badge
+    const hdp = document.getElementById('homeDeliveryPrice');
+    if (hdp) hdp.textContent = subtotal >= FREE_SHIPPING ? '免費' : 'NT$120';
+  }
+
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    document.getElementById('sidebarItems').classList.toggle('collapsed', !sidebarOpen);
+    document.getElementById('sidebarToggleBtn').textContent = sidebarOpen ? '收合 ▲' : '展開 ▼';
+  }
+
+  // ===== STEP NAVIGATION =====
+  function goToStep(step) {
+    if (step > currentStep && !validateStep(currentStep)) return;
+    currentStep = step;
+
+    // Update pages
+    document.querySelectorAll('.step-page').forEach((p,i) => {
+      p.classList.toggle('active', i+1 === step);
+    });
+
+    // Update step indicators
+    for (let i = 1; i <= 4; i++) {
+      const dot = document.getElementById(`stepDot${i}`);
+      const num = document.getElementById(`stepNum${i}`);
+      dot.className = 'step';
+      if (i < step) { dot.classList.add('done'); num.textContent = '✓'; }
+      else if (i === step) { dot.classList.add('active'); num.textContent = i; }
+      else { num.textContent = i; }
+      if (i < 4) {
+        document.getElementById(`stepLine${i}`).classList.toggle('done', i < step);
+      }
+    }
+
+    if (step === 3) buildReview();
+    renderSidebar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ===== VALIDATION =====
+  function validateStep(step) {
+    if (step === 1) {
+      let ok = true;
+      const checks = [
+        { id:'f-name',    err:'e-name',     test: v => v.trim().length >= 2 },
+        { id:'f-phone',   err:'e-phone',    test: v => /^09\d{8}$/.test(v.replace(/-/g,'')) },
+        { id:'f-email',   err:'e-email',    test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+        { id:'f-city',    err:'e-city',     test: v => v !== '' },
+        { id:'f-district',err:'e-district', test: v => v !== '' },
+        { id:'f-address', err:'e-address',  test: v => v.trim().length >= 4 },
+      ];
+      // Skip address if pickup
+      const deliveryChecks = selectedDelivery === 'pickup'
+        ? checks.slice(0,3) : checks;
+      deliveryChecks.forEach(c => {
+        const el = document.getElementById(c.id);
+        const err = document.getElementById(c.err);
+        const valid = el && c.test(el.value);
+        if (el) el.classList.toggle('error', !valid);
+        if (err) err.classList.toggle('show', !valid);
+        if (!valid) ok = false;
+      });
+      if (!ok) showToast('請填寫所有必填欄位 ⚠️');
+      return ok;
+    }
+    return true;
+  }
+
+  // ===== OPTION CARD SELECTION =====
+  function selectOption(card, group) {
+    card.closest('.option-cards').querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    const val = card.querySelector('input[type="radio"]').value;
+    if (group === 'delivery') {
+      selectedDelivery = val;
+      document.getElementById('addressSection').style.display = val === 'pickup' ? 'none' : '';
+    }
+    if (group === 'payment') selectedPayment = val;
+    renderSidebar();
+  }
+
+  function showPaymentFields(type) {
+    ['cc','atm','linepay','cod'].forEach(t => {
+      const el = document.getElementById(t+'Fields');
+      if (el) el.style.display = t === type ? '' : 'none';
+    });
+  }
+
+  // ===== CC FORMATTING =====
+  function formatCC(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,16);
+    input.value = v.replace(/(.{4})/g,'$1  ').trim();
+  }
+  function formatExp(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 2) v = v.substring(0,2) + ' / ' + v.substring(2);
+    input.value = v;
+  }
+
+  // ===== COUPON =====
+  function applyCoupon() {
+    const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    const result = document.getElementById('couponResult');
+    if (VALID_COUPONS[code]) {
+      appliedCoupon = VALID_COUPONS[code];
+      result.className = 'coupon-result ok';
+      result.textContent = `✓ 已套用：${appliedCoupon.label}`;
+    } else {
+      appliedCoupon = null;
+      result.className = 'coupon-result fail';
+      result.textContent = '✕ 折扣碼無效或已過期，請再確認';
+    }
+    renderSidebar();
+  }
+
+  // ===== REVIEW BUILDER =====
+  function buildReview() {
+    const cart = getCart();
+    const items = Object.values(cart);
+
+    // Items
+    const reviewItems = document.getElementById('reviewItems');
+    reviewItems.innerHTML = items.map(item => `
+      <div class="review-item">
+        <div class="review-thumb" style="background:${item.bg}">${item.icon}</div>
+        <div>
+          <div class="review-item-name">${item.name}</div>
+          <div class="review-item-meta">${item.wood} · 數量 ${item.qty}</div>
+        </div>
+        <div class="review-item-price">NT$${(item.price * item.qty).toLocaleString()}</div>
+      </div>`).join('');
+
+    // Shipping review
+    const deliveryLabels = { home:'宅配到府（黑貓宅急便）', cvs:'超商取貨', pickup:'到店自取（三義展大雕刻行）' };
+    const nameVal = document.getElementById('f-name')?.value || '';
+    const phoneVal = document.getElementById('f-phone')?.value || '';
+    const addrVal = document.getElementById('f-address')?.value || '';
+    const cityVal = document.getElementById('f-city')?.value || '';
+    document.getElementById('reviewShipping').innerHTML = `
+      <div class="review-info-title">寄送資訊</div>
+      <div class="review-info-content">
+        收件人：${nameVal}　電話：${phoneVal}<br>
+        寄送方式：${deliveryLabels[selectedDelivery] || selectedDelivery}<br>
+        ${selectedDelivery !== 'pickup' ? `地址：${cityVal} ${addrVal}` : '取貨地點：苗栗縣三義鄉廣盛村'}
+      </div>`;
+
+    // Payment review
+    const payLabels = { cc:'信用卡', atm:'ATM 轉帳', linepay:'LINE Pay', cod:'貨到付款' };
+    const ccNum = document.getElementById('f-ccnum')?.value || '';
+    const ccLast = ccNum ? `（末四碼：${ccNum.replace(/\s/g,'').slice(-4)}）` : '';
+    document.getElementById('reviewPayment').innerHTML = `
+      <div class="review-info-title">付款方式</div>
+      <div class="review-info-content">
+        ${payLabels[selectedPayment] || selectedPayment}${selectedPayment==='cc'?ccLast:''}<br>
+        ${appliedCoupon ? `套用折扣碼：${document.getElementById('couponInput').value.trim().toUpperCase()}（${appliedCoupon.label}）` : '無使用折扣碼'}
+      </div>`;
+  }
+
+  // ===== SUBMIT =====
+  function toggleSubmit() {
+    const agreed = document.getElementById('agreeTerms').checked;
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = !agreed;
+    btn.style.opacity = agreed ? '1' : '0.5';
+    btn.style.cursor = agreed ? 'pointer' : 'not-allowed';
+  }
+
+  function placeOrder() {
+    const cart = getCart();
+    if (Object.keys(cart).length === 0) {
+      showToast('購物車是空的，請先加入商品 ⚠️');
+      return;
+    }
+
+    // Show loading
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.add('show');
+
+    setTimeout(() => {
+      overlay.classList.remove('show');
+
+      // Clear cart
+      localStorage.removeItem('haoke_cart');
+
+      // Generate order number
+      const orderNum = 'HK-' + Date.now().toString().slice(-8).toUpperCase();
+      document.getElementById('orderNumDisplay').textContent = orderNum;
+
+      // Hide main, show success
+      document.getElementById('checkoutMain').style.display = 'none';
+      document.querySelector('.steps-bar').style.display = 'none';
+      document.getElementById('successPage').style.display = 'block';
+
+      // Update step to done
+      goToStep(4);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 2200);
+  }
+
+  // ===== GIFT WRAP LISTENER =====
+  document.addEventListener('change', e => {
+    if (e.target.id === 'giftWrap') renderSidebar();
+  });
+
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ===== INIT =====
+  function init() {
+    const cart = getCart();
+    if (Object.keys(cart).length === 0) {
+      showToast('購物車是空的，請先加入商品！');
+      setTimeout(() => window.location.href = 'index.html', 2000);
+      return;
+    }
+    renderSidebar();
+    goToStep(1);
+  }
+
+  init();
+</script>
+</body>
+</html>
