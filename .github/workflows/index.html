@@ -1,0 +1,2563 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>好客商城｜三義木雕專區・展大雕刻行</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wood-dark: #3d2b1f;
+    --wood-mid: #7a4f2e;
+    --wood-light: #c8935a;
+    --wood-pale: #e8d5b7;
+    --cream: #faf6ef;
+    --warm-white: #fffdf9;
+    --accent-gold: #b8902a;
+    --accent-moss: #5c6b3a;
+    --text-dark: #2a1f15;
+    --text-mid: #5a4535;
+    --text-light: #9a8070;
+    --shadow-warm: rgba(61, 43, 31, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--warm-white);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ===== NAVIGATION ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: rgba(250, 246, 239, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(184, 144, 42, 0.2);
+    padding: 0 5vw;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--wood-dark);
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+
+  .nav-logo span {
+    color: var(--accent-gold);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.875rem;
+    color: var(--text-mid);
+    letter-spacing: 0.04em;
+    transition: color 0.3s;
+    font-weight: 400;
+  }
+
+  .nav-links a:hover { color: var(--accent-gold); }
+
+  .nav-cta {
+    background: var(--wood-dark);
+    color: var(--cream) !important;
+    padding: 8px 20px;
+    border-radius: 2px;
+    transition: background 0.3s !important;
+  }
+
+  .nav-cta:hover { background: var(--wood-mid) !important; color: var(--cream) !important; }
+
+  /* ===== CART BUTTON IN NAV ===== */
+  .nav-cart-btn {
+    position: relative;
+    background: var(--wood-dark);
+    color: var(--cream);
+    border: none;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s;
+  }
+  .nav-cart-btn:hover { background: var(--wood-mid); }
+  .cart-badge {
+    background: var(--accent-gold);
+    color: var(--wood-dark);
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    line-height: 1;
+    display: none;
+  }
+  .cart-badge.show { display: inline-flex; }
+
+  /* ===== CART SIDEBAR ===== */
+  .cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(42, 31, 21, 0.55);
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+    backdrop-filter: blur(3px);
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+
+  .cart-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 420px;
+    max-width: 100vw;
+    background: var(--warm-white);
+    z-index: 2100;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -8px 0 40px rgba(61, 43, 31, 0.2);
+  }
+  .cart-drawer.open { transform: translateX(0); }
+
+  .cart-drawer-head {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--wood-pale);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--cream);
+  }
+  .cart-drawer-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    color: var(--wood-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cart-count-label {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    font-family: 'Noto Sans TC', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .cart-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--text-mid);
+    line-height: 1;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+  .cart-close-btn:hover { color: var(--wood-dark); }
+
+  .cart-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--wood-pale) transparent;
+  }
+
+  .cart-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    gap: 12px;
+    padding: 60px 0;
+  }
+  .cart-empty-icon { font-size: 3rem; opacity: 0.4; }
+  .cart-empty-text { font-size: 0.9rem; text-align: center; line-height: 1.7; }
+
+  .cart-item {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 14px;
+    align-items: start;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--wood-pale);
+    animation: slideInRight 0.3s ease;
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .cart-item-thumb {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+  .cart-item-info { min-width: 0; }
+  .cart-item-wood {
+    font-size: 0.65rem;
+    color: var(--accent-gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .cart-item-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.9rem;
+    color: var(--wood-dark);
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .cart-item-qty {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid var(--wood-pale);
+    width: fit-content;
+  }
+  .qty-btn {
+    background: none;
+    border: none;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-mid);
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qty-btn:hover { background: var(--wood-pale); color: var(--wood-dark); }
+  .qty-num {
+    width: 32px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--wood-dark);
+    border-left: 1px solid var(--wood-pale);
+    border-right: 1px solid var(--wood-pale);
+    height: 28px;
+    line-height: 28px;
+  }
+  .cart-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .cart-item-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--wood-dark);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .cart-item-remove {
+    background: none;
+    border: none;
+    font-size: 0.72rem;
+    color: var(--text-light);
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+    padding: 0;
+  }
+  .cart-item-remove:hover { color: #c0392b; }
+
+  .cart-footer {
+    padding: 20px 28px 28px;
+    border-top: 1px solid var(--wood-pale);
+    background: var(--cream);
+  }
+  .cart-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .cart-summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.83rem;
+    color: var(--text-mid);
+  }
+  .cart-summary-row.total {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    color: var(--wood-dark);
+    font-weight: 500;
+    padding-top: 12px;
+    border-top: 1px solid var(--wood-pale);
+    margin-top: 4px;
+  }
+  .cart-summary-row.total span:last-child {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--wood-dark);
+  }
+  .free-shipping-bar {
+    background: var(--wood-pale);
+    height: 4px;
+    border-radius: 2px;
+    margin-bottom: 6px;
+    overflow: hidden;
+  }
+  .free-shipping-fill {
+    height: 100%;
+    background: var(--accent-moss);
+    transition: width 0.5s ease;
+  }
+  .free-shipping-note {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    letter-spacing: 0.03em;
+  }
+  .cart-checkout-btn {
+    width: 100%;
+    background: var(--wood-dark);
+    color: var(--cream);
+    border: none;
+    padding: 16px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .cart-checkout-btn:hover {
+    background: var(--wood-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--shadow-warm);
+  }
+  .cart-checkout-btn:disabled {
+    background: var(--text-light);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .cart-continue-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--wood-pale);
+    color: var(--text-mid);
+    padding: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+  .cart-continue-btn:hover { border-color: var(--wood-mid); color: var(--wood-dark); }
+
+  /* ===== HERO SECTION ===== */
+  #home {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8vw 6vw 8vw 8vw;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent-gold);
+  }
+
+  .hero-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(2.2rem, 4vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--wood-dark);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--wood-mid);
+    font-weight: 400;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--text-mid);
+    max-width: 420px;
+    margin-bottom: 3rem;
+    font-weight: 300;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--wood-dark);
+    color: var(--cream);
+    padding: 14px 32px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    background: var(--wood-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px var(--shadow-warm);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--wood-dark);
+    padding: 14px 32px;
+    border: 1px solid var(--wood-light);
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--wood-dark);
+    background: rgba(61, 43, 31, 0.05);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid rgba(184, 144, 42, 0.2);
+  }
+
+  .stat { text-align: left; }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--wood-dark);
+    font-weight: 700;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+    background: var(--wood-pale);
+  }
+
+  .hero-right-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 70% 30%, rgba(200, 147, 90, 0.3) 0%, transparent 60%),
+      radial-gradient(ellipse at 30% 80%, rgba(122, 79, 46, 0.2) 0%, transparent 50%),
+      linear-gradient(160deg, #e8d5b7 0%, #d4b896 40%, #c8935a 100%);
+  }
+
+  .hero-wood-texture {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        92deg,
+        transparent,
+        transparent 3px,
+        rgba(61, 43, 31, 0.03) 3px,
+        rgba(61, 43, 31, 0.03) 4px
+      ),
+      repeating-linear-gradient(
+        88deg,
+        transparent,
+        transparent 8px,
+        rgba(61, 43, 31, 0.02) 8px,
+        rgba(61, 43, 31, 0.02) 9px
+      );
+  }
+
+  .hero-card {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(250, 246, 239, 0.9);
+    backdrop-filter: blur(8px);
+    padding: 24px 32px;
+    width: 80%;
+    max-width: 320px;
+    border-left: 3px solid var(--accent-gold);
+  }
+
+  .hero-card-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .hero-card-text {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    color: var(--wood-dark);
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .hero-wood-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 200px;
+    height: 200px;
+    opacity: 0.15;
+  }
+
+  .floating-badge {
+    position: absolute;
+    top: 15%;
+    right: 10%;
+    background: var(--wood-dark);
+    color: var(--cream);
+    padding: 16px 20px;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ===== NAV CATEGORIES ===== */
+  .categories-bar {
+    background: var(--wood-dark);
+    padding: 0 8vw;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .categories-bar::-webkit-scrollbar { display: none; }
+
+  .cat-item {
+    padding: 18px 28px;
+    color: rgba(232, 213, 183, 0.7);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    text-decoration: none;
+    display: block;
+  }
+
+  .cat-item:hover, .cat-item.active {
+    color: var(--accent-gold);
+    border-bottom-color: var(--accent-gold);
+  }
+
+  /* ===== PRODUCTS SECTION ===== */
+  #products {
+    padding: 100px 8vw;
+    background: var(--cream);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+  }
+
+  .section-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent-gold);
+  }
+
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.6rem, 2.5vw, 2.5rem);
+    font-weight: 400;
+    color: var(--wood-dark);
+    line-height: 1.4;
+  }
+
+  .section-link {
+    font-size: 0.8rem;
+    color: var(--wood-mid);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--wood-light);
+    padding-bottom: 2px;
+    transition: all 0.3s;
+  }
+
+  .section-link:hover { color: var(--wood-dark); border-color: var(--wood-dark); }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 8px 20px;
+    border: 1px solid var(--wood-pale);
+    background: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-mid);
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--wood-dark);
+    color: var(--cream);
+    border-color: var(--wood-dark);
+  }
+
+  /* Price range display */
+  .price-note {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    padding: 12px 16px;
+    background: white;
+    border-left: 3px solid var(--accent-gold);
+    display: inline-block;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2px;
+  }
+
+  .product-card {
+    background: white;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px var(--shadow-warm);
+    z-index: 2;
+  }
+
+  .product-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+
+  .product-card:hover .product-img {
+    transform: scale(1.03);
+  }
+
+  .product-img-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    transition: transform 0.5s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-card:hover .product-img-placeholder {
+    transform: scale(1.03);
+  }
+
+  .product-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--accent-gold);
+    color: white;
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .product-info {
+    padding: 20px 24px 24px;
+  }
+
+  .product-wood-type {
+    font-size: 0.7rem;
+    color: var(--accent-gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .product-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--wood-dark);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .product-desc {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--wood-pale);
+  }
+
+  .product-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: var(--wood-dark);
+    font-weight: 700;
+  }
+
+  .product-price-note {
+    font-size: 0.65rem;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  .product-add {
+    background: var(--wood-dark);
+    color: var(--cream);
+    border: none;
+    padding: 10px 18px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Noto Sans TC', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  .product-add:hover { background: var(--wood-mid); }
+
+  /* Trust badges */
+  .trust-bar {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+    flex-wrap: wrap;
+  }
+
+  .trust-item {
+    flex: 1;
+    min-width: 150px;
+    background: white;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .trust-icon { font-size: 1.8rem; margin-bottom: 10px; }
+
+  .trust-label {
+    font-size: 0.75rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== PRODUCT DETAIL SECTION ===== */
+  #detail {
+    padding: 100px 8vw;
+    background: var(--warm-white);
+  }
+
+  .detail-showcase {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5vw;
+    margin-top: 4rem;
+  }
+
+  .detail-gallery {
+    position: relative;
+  }
+
+  .gallery-main {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(145deg, var(--wood-pale), var(--wood-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6rem;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gallery-main::after {
+    content: '多光源實拍・呈現真實紋理';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(61, 43, 31, 0.7);
+    color: rgba(232, 213, 183, 0.9);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .gallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .gallery-thumb {
+    aspect-ratio: 1;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .gallery-thumb:first-child { border-color: var(--accent-gold); }
+  .gallery-thumb:nth-child(1) { background: linear-gradient(135deg, #e8d5b7, #c8935a); }
+  .gallery-thumb:nth-child(2) { background: linear-gradient(135deg, #f5e5d0, #d4a574); }
+  .gallery-thumb:nth-child(3) { background: linear-gradient(135deg, #d4b896, #a07040); }
+  .gallery-thumb:nth-child(4) { background: linear-gradient(135deg, #c8935a, #7a4f2e); }
+
+  .light-label {
+    font-size: 0.6rem;
+    color: white;
+    letter-spacing: 0.1em;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .detail-info h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .detail-info h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--wood-dark);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .detail-price-block {
+    background: var(--cream);
+    padding: 20px 24px;
+    margin: 1.5rem 0;
+    border-left: 3px solid var(--accent-gold);
+  }
+
+  .detail-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--wood-dark);
+    font-weight: 700;
+  }
+
+  .detail-price-note {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--wood-pale);
+    margin: 1.5rem 0;
+    border: 1px solid var(--wood-pale);
+  }
+
+  .spec-item {
+    background: white;
+    padding: 14px 16px;
+  }
+
+  .spec-key {
+    font-size: 0.68rem;
+    color: var(--text-light);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .spec-val {
+    font-size: 0.9rem;
+    color: var(--wood-dark);
+    font-weight: 500;
+  }
+
+  .shipping-info {
+    background: rgba(92, 107, 58, 0.08);
+    border: 1px solid rgba(92, 107, 58, 0.2);
+    padding: 16px 20px;
+    margin: 1.5rem 0;
+    font-size: 0.82rem;
+    color: var(--accent-moss);
+    line-height: 1.7;
+  }
+
+  .shipping-info strong { display: block; margin-bottom: 4px; }
+
+  /* ===== AI CONSULTANT ===== */
+  #ai {
+    padding: 100px 8vw;
+    background: var(--wood-dark);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #ai::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(184, 144, 42, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  #ai .section-eyebrow { color: var(--wood-light); }
+  #ai .section-eyebrow::before { background: var(--wood-light); }
+  #ai .section-title { color: var(--cream); }
+
+  .ai-interface {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4vw;
+    margin-top: 4rem;
+  }
+
+  .ai-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .ai-feature {
+    padding: 24px;
+    border: 1px solid rgba(232, 213, 183, 0.15);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .ai-feature:hover, .ai-feature.active {
+    border-color: var(--accent-gold);
+    background: rgba(184, 144, 42, 0.08);
+  }
+
+  .ai-feature-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .ai-feature-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .ai-feature-desc {
+    font-size: 0.78rem;
+    color: rgba(232, 213, 183, 0.65);
+    line-height: 1.7;
+  }
+
+  .ai-chat-window {
+    background: rgba(250, 246, 239, 0.05);
+    border: 1px solid rgba(232, 213, 183, 0.2);
+    display: flex;
+    flex-direction: column;
+    height: 480px;
+    border-radius: 0;
+  }
+
+  .chat-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(232, 213, 183, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chat-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .chat-name {
+    font-size: 0.85rem;
+    color: var(--cream);
+    font-weight: 500;
+  }
+
+  .chat-status {
+    font-size: 0.68rem;
+    color: #7bc67e;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .chat-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #7bc67e;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(232, 213, 183, 0.2) transparent;
+  }
+
+  .msg {
+    max-width: 85%;
+    animation: fadeSlideIn 0.3s ease;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-ai {
+    align-self: flex-start;
+  }
+
+  .msg-user {
+    align-self: flex-end;
+  }
+
+  .msg-bubble {
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+
+  .msg-ai .msg-bubble {
+    background: rgba(232, 213, 183, 0.12);
+    color: var(--wood-pale);
+    border-left: 2px solid var(--accent-gold);
+  }
+
+  .msg-user .msg-bubble {
+    background: var(--accent-gold);
+    color: var(--wood-dark);
+  }
+
+  .msg-time {
+    font-size: 0.6rem;
+    color: rgba(232, 213, 183, 0.35);
+    margin-top: 4px;
+    padding: 0 4px;
+  }
+
+  .msg-user .msg-time { text-align: right; }
+
+  .chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(232, 213, 183, 0.15);
+    display: flex;
+    gap: 10px;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(232, 213, 183, 0.2);
+    color: var(--cream);
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    outline: none;
+  }
+
+  .chat-input::placeholder { color: rgba(232, 213, 183, 0.35); }
+  .chat-input:focus { border-color: var(--accent-gold); }
+
+  .chat-send {
+    background: var(--accent-gold);
+    color: var(--wood-dark);
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+  }
+
+  .chat-send:hover { background: var(--wood-light); }
+
+  .quick-prompts {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(232, 213, 183, 0.1);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .quick-prompt {
+    font-size: 0.7rem;
+    padding: 5px 12px;
+    border: 1px solid rgba(232, 213, 183, 0.25);
+    color: rgba(232, 213, 183, 0.7);
+    cursor: pointer;
+    transition: all 0.3s;
+    background: none;
+    font-family: 'Noto Sans TC', sans-serif;
+    letter-spacing: 0.03em;
+  }
+
+  .quick-prompt:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+  }
+
+  /* ===== VIP MEMBER ===== */
+  #vip {
+    padding: 100px 8vw;
+    background: linear-gradient(135deg, var(--cream) 0%, var(--wood-pale) 100%);
+  }
+
+  .vip-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 5vw;
+    margin-top: 4rem;
+    align-items: start;
+  }
+
+  .vip-card {
+    background: var(--wood-dark);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vip-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(ellipse, rgba(184, 144, 42, 0.2), transparent 70%);
+  }
+
+  .vip-badge {
+    display: inline-block;
+    background: var(--accent-gold);
+    color: var(--wood-dark);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+  }
+
+  .vip-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .vip-desc {
+    font-size: 0.85rem;
+    color: rgba(232, 213, 183, 0.7);
+    line-height: 1.9;
+    margin-bottom: 2rem;
+  }
+
+  .vip-benefits {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 2.5rem;
+  }
+
+  .vip-benefits li {
+    font-size: 0.82rem;
+    color: var(--wood-pale);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .vip-benefits li::before {
+    content: '◆';
+    color: var(--accent-gold);
+    font-size: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .vip-form-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .sensory-box {
+    background: white;
+    padding: 32px;
+    border: 1px solid var(--wood-pale);
+    position: relative;
+  }
+
+  .sensory-icon-big {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .sensory-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.2rem;
+    color: var(--wood-dark);
+    margin-bottom: 0.75rem;
+  }
+
+  .sensory-desc {
+    font-size: 0.8rem;
+    color: var(--text-mid);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .trigger-conditions {
+    background: var(--cream);
+    padding: 16px;
+    margin-bottom: 1.5rem;
+  }
+
+  .trigger-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .trigger-item {
+    font-size: 0.75rem;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .trigger-item::before { content: '→'; color: var(--wood-mid); }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--wood-pale);
+    background: white;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .form-input:focus { border-color: var(--accent-gold); }
+
+  .form-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--wood-pale);
+    background: white;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  /* ===== O2O SECTION ===== */
+  #o2o {
+    padding: 100px 8vw;
+    background: var(--warm-white);
+  }
+
+  .o2o-layout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 4vw;
+    margin-top: 4rem;
+  }
+
+  .map-placeholder {
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #e8d5b7 0%, #d4b896 50%, #c8935a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .map-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: rgba(61, 43, 31, 0.4);
+    color: white;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .map-pin {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .map-info {
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
+  .map-info strong {
+    display: block;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+  }
+
+  .store-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .info-card {
+    background: var(--cream);
+    padding: 24px;
+    border-left: 3px solid var(--accent-gold);
+  }
+
+  .info-card-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .info-card-content {
+    font-size: 0.85rem;
+    color: var(--text-mid);
+    line-height: 1.8;
+  }
+
+  .booking-form {
+    background: var(--wood-dark);
+    padding: 32px;
+    margin-top: 1.5rem;
+  }
+
+  .booking-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+
+  .booking-form .form-label { color: rgba(232, 213, 183, 0.7); }
+
+  .booking-form .form-input {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(232, 213, 183, 0.2);
+    color: var(--cream);
+  }
+
+  .booking-form .form-input:focus { border-color: var(--accent-gold); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--wood-dark);
+    padding: 60px 8vw 30px;
+    color: rgba(232, 213, 183, 0.6);
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(232, 213, 183, 0.1);
+    margin-bottom: 30px;
+  }
+
+  .footer-brand {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.3rem;
+    color: var(--cream);
+    margin-bottom: 1rem;
+  }
+
+  .footer-brand span { color: var(--accent-gold); }
+
+  .footer-tagline {
+    font-size: 0.78rem;
+    line-height: 1.8;
+    max-width: 260px;
+  }
+
+  .footer-col-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .footer-links a {
+    text-decoration: none;
+    font-size: 0.8rem;
+    color: rgba(232, 213, 183, 0.6);
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--wood-light); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.72rem;
+    color: rgba(232, 213, 183, 0.35);
+  }
+
+  /* ===== SCROLL ANIMATIONS ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger children */
+  .reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal-stagger.visible > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.05s; }
+  .reveal-stagger.visible > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.15s; }
+  .reveal-stagger.visible > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.25s; }
+  .reveal-stagger.visible > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.35s; }
+  .reveal-stagger.visible > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 0.45s; }
+  .reveal-stagger.visible > *:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 0.55s; }
+
+  /* ===== MODALS / TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--wood-dark);
+    color: var(--cream);
+    padding: 16px 24px;
+    font-size: 0.85rem;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.4s;
+    border-left: 3px solid var(--accent-gold);
+    pointer-events: none;
+    max-width: 320px;
+    line-height: 1.6;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 768px) {
+    #home { grid-template-columns: 1fr; min-height: auto; }
+    .hero-right { display: none; }
+    .hero-left { padding: 6vw; }
+    .detail-showcase, .ai-interface, .vip-layout, .o2o-layout, .footer-top {
+      grid-template-columns: 1fr;
+    }
+    .nav-links { display: none; }
+    .hero-stats { gap: 1.5rem; }
+  }
+
+  /* ===== MISC UTILITIES ===== */
+  .text-gold { color: var(--accent-gold); }
+  .mt-1 { margin-top: 0.5rem; }
+  .mt-2 { margin-top: 1rem; }
+  .full-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  /* Loading shimmer for images */
+  .img-shimmer {
+    background: linear-gradient(90deg, var(--wood-pale) 25%, #f0e0c8 50%, var(--wood-pale) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <a class="nav-logo" href="#home">好客商城 <span>·</span> 三義木雕</a>
+  <ul class="nav-links">
+    <li><a href="#home">尋找靈感</a></li>
+    <li><a href="#products">商品目錄</a></li>
+    <li><a href="#detail">商品詳情</a></li>
+    <li><a href="#ai">AI 木雕顧問</a></li>
+    <li><a href="#vip">VIP 會員</a></li>
+    <li><a href="#o2o">預約參觀</a></li>
+  </ul>
+  <button class="nav-cart-btn" onclick="openCart()">
+    🛒 購物車
+    <span class="cart-badge" id="cartBadge">0</span>
+  </button>
+</nav>
+
+<!-- HERO SECTION -->
+<section id="home">
+  <div class="hero-left">
+    <div class="hero-eyebrow">展大雕刻行・五十年傳承</div>
+    <h1 class="hero-title">
+      為你的週末早晨，<br>
+      增添一抹<em>溫潤的</em><br>
+      木質調
+    </h1>
+    <p class="hero-subtitle">
+      每一件作品，都是三義山林與匠人之手的對話。<br>
+      不只是擺件——是你選擇慢活的方式。
+    </p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">探索商品</a>
+      <a href="#ai" class="btn-secondary">與 AI 顧問諮詢</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">50<small style="font-size:1rem">+</small></span>
+        <div class="stat-label">年深耕木藝</div>
+      </div>
+      <div class="stat">
+        <span class="stat-num">NT$39</span>
+        <div class="stat-label">起，透明定價</div>
+      </div>
+      <div class="stat">
+        <span class="stat-num">100<small style="font-size:1rem">%</small></span>
+        <div class="stat-label">原木實料保證</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-right-bg"></div>
+    <div class="hero-wood-texture"></div>
+    <svg class="hero-wood-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="100" rx="90" ry="90" fill="none" stroke="#3d2b1f" stroke-width="2"/>
+      <ellipse cx="100" cy="100" rx="70" ry="70" fill="none" stroke="#3d2b1f" stroke-width="1.5"/>
+      <ellipse cx="100" cy="100" rx="50" ry="50" fill="none" stroke="#3d2b1f" stroke-width="1"/>
+      <ellipse cx="100" cy="100" rx="30" ry="30" fill="none" stroke="#3d2b1f" stroke-width="0.8"/>
+      <ellipse cx="100" cy="100" rx="12" ry="12" fill="none" stroke="#3d2b1f" stroke-width="0.5"/>
+      <line x1="10" y1="100" x2="190" y2="100" stroke="#3d2b1f" stroke-width="0.5" opacity="0.3"/>
+      <line x1="100" y1="10" x2="100" y2="190" stroke="#3d2b1f" stroke-width="0.5" opacity="0.3"/>
+    </svg>
+    <div class="floating-badge">
+      苗栗三義<br>限量手工<br>直送到府
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-label">本週精選</div>
+      <div class="hero-card-text">「龍眼木茶席擺件」<br>含水率 12%・附產地溯源</div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORY BAR -->
+<div class="categories-bar">
+  <a href="#products" class="cat-item active">全部商品</a>
+  <a href="#products" class="cat-item">客廳擺件</a>
+  <a href="#products" class="cat-item">書房文具</a>
+  <a href="#products" class="cat-item">茶席美學</a>
+  <a href="#products" class="cat-item">宗教藝術</a>
+  <a href="#products" class="cat-item">大師工藝</a>
+  <a href="#products" class="cat-item">客製服務</a>
+</div>
+
+<!-- PRODUCTS SECTION -->
+<section id="products">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">商品目錄</div>
+      <h2 class="section-title">尋找你的那件木作</h2>
+    </div>
+    <a href="#" class="section-link">查看全部 →</a>
+  </div>
+
+  <div class="filter-bar reveal">
+    <button class="filter-btn active" onclick="filterProducts(this,'all')">全部</button>
+    <button class="filter-btn" onclick="filterProducts(this,'客廳')">客廳擺件</button>
+    <button class="filter-btn" onclick="filterProducts(this,'書房')">書房文具</button>
+    <button class="filter-btn" onclick="filterProducts(this,'茶席')">茶席美學</button>
+    <button class="filter-btn" onclick="filterProducts(this,'宗教')">宗教藝術</button>
+    <button class="filter-btn" onclick="filterProducts(this,'大師')">大師精品</button>
+  </div>
+
+  <div class="price-note reveal">
+    ✦ 透明定價，無隱藏費用｜商品價格區間：NT$39 – NT$100,000+
+  </div>
+
+  <div class="product-grid reveal-stagger" id="productGrid">
+
+    <div class="product-card" data-pid="p1" data-category="茶席">
+      <div class="product-img-placeholder" style="background:linear-gradient(135deg,#e8d5b7,#c8935a)">
+        <span>🍵</span>
+      </div>
+      <span class="product-badge">熱銷</span>
+      <div class="product-info">
+        <div class="product-wood-type">龍眼木・茶席</div>
+        <div class="product-name">龍眼木茶盤擺件</div>
+        <div class="product-desc">天然龍眼木實木製作，木紋細膩獨特，適合禪意茶室或書房陳設。</div>
+        <div class="product-meta">
+          <div>
+            <div class="product-price">NT$2,800</div>
+            <div class="product-price-note">含稅・免運費（滿$3,000）</div>
+          </div>
+          <button class="product-add" onclick="addToCart(this,'龍眼木茶盤擺件','NT$2,800')">加入購物車</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-pid="p2" data-category="書房">
+      <div class="product-img-placeholder" style="background:linear-gradient(135deg,#d4b896,#a07040)">
+        <span>🖊️</span>
+      </div>
+      <div class="product-info">
+        <div class="product-wood-type">烏心石・文具</div>
+        <div class="product-name">烏心石筆筒</div>
+        <div class="product-desc">質地緻密的烏心石，手感溫潤，是書房中沉穩質感的象徵。</div>
+        <div class="product-meta">
+          <div>
+            <div class="product-price">NT$680</div>
+            <div class="product-price-note">含稅・限量手工</div>
+          </div>
+          <button class="product-add" onclick="addToCart(this,'烏心石筆筒','NT$680')">加入購物車</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-pid="p3" data-category="客廳">
+      <div class="product-img-placeholder" style="background:linear-gradient(135deg,#c8935a,#7a4f2e)">
+        <img src="https://down-tw.img.susercontent.com/file/tw-11134207-7r98r-lsin7df7wwr6d5" alt="商品圖">
+      </div>
+      <span class="product-badge" style="background:var(--wood-mid)">精品</span>
+      <div class="product-info">
+        <div class="product-wood-type">檜木・立體雕刻</div>
+        <div class="product-name">台灣檜木雲龍擺件</div>
+        <div class="product-desc">傳統技法精雕，香氣天然持久，附原木底座，適合玄關大廳陳設。</div>
+        <div class="product-meta">
+          <div>
+            <div class="product-price">NT$28,000</div>
+            <div class="product-price-note">含溯源證書・防撞包裝</div>
+          </div>
+          <button class="product-add" onclick="addToCart(this,'台灣檜木雲龍擺件','NT$28,000')">加入購物車</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-pid="p4" data-category="茶席">
+      <div class="product-img-placeholder" style="background:linear-gradient(135deg,#e0c8a0,#b8902a)">
+        <img src="https://down-tw.img.susercontent.com/file/tw-11134207-7r98r-lsin7df7wwr6d5" alt="商品圖">
+      </div>
+      <div class="product-info">
+        <div class="product-wood-type">相思木・茶具</div>
+        <div class="product-name">相思木茶葉罐</div>
+        <div class="product-desc">精選苗栗相思木製作，質地均勻，天然木紋如行雲，密封性良好。</div>
+        <div class="product-meta">
+          <div>
+            <div class="product-price">NT$1,200</div>
+            <div class="product-price-note">含稅・附密封墊</div>
+          </div>
+          <button class="product-add" onclick="addToCart(this,'相思木茶葉罐','NT$1,200')">加入購物車</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-pid="p5" data-category="宗教">
+      <div class="product-img-placeholder" style="background:linear-gradient(135deg,#f0d4a0,#c8802a)">
+        <img src="https://down-tw.img.susercontent.com/file/tw-11134207-7r98r-lsin7df7wwr6d5" alt="商品圖">
+      </div>
+      <span class="product-badge" style="background:var(--accent-moss)">傳承</span>
+      <div class="product-info">
+        <div class="product-wood-type">牛樟木・宗教</div>
+        <div class="product-name">牛樟木神明像</div>
+        <div class="product-desc">嚴選台灣老牛樟，工藝師手工雕刻，每件皆附鑑定書與年份說明。</div>
+        <div class="product-meta">
+          <div>
+            <div class="product-price">NT$85,000</div>
+            <div class="product-price-note">含鑑定書・可分期付款</div>
+          </div>
+          <button class="product-add" onclick="addToCart(this,'牛樟木神明像','NT$85,000')">加入購物車</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-pid="p6" data-category="書房">
+      <div class="product-img-placeholder" style="background:linear-gradient(135deg,#d8c0a0,#9a7050)">
+        <img src="https://down-tw.img.susercontent.com/file/tw-11134207-7r98r-lsin7df7wwr6d5" alt="商品圖">
+      </div>
+      <div class="product-info">
+        <div class="product-wood-type">黑檀木・文具</div>
+        <div class="product-name">黑檀木名片座</div>
+        <div class="product-desc">重量感與質感兼具，辦公桌上的低調奢華，可客製刻字。</div>
+        <div class="product-meta">
+          <div>
+            <div class="product-price">NT$890</div>
+            <div class="product-price-note">可加購刻字 +NT$200</div>
+          </div>
+          <button class="product-add" onclick="addToCart(this,'黑檀木名片座','NT$890')">加入購物車</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Trust bar -->
+  <div class="trust-bar reveal" style="margin-top:2px">
+    <div class="trust-item">
+      <div class="trust-icon">🛡️</div>
+      <div class="trust-label">含水率認證<br>每件附檢測報告</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">📦</div>
+      <div class="trust-label">專業防撞包裝<br>木雕專用海綿隔層</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">🔄</div>
+      <div class="trust-label">七天退換貨<br>到貨瑕疵全額退款</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">🚚</div>
+      <div class="trust-label">滿 NT$3,000<br>全台免運費</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">📜</div>
+      <div class="trust-label">木材產地溯源<br>附台灣林班地證明</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT DETAIL -->
+<section id="detail">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">商品詳情示範</div>
+      <h2 class="section-title">透明資訊，讓你安心下單</h2>
+    </div>
+  </div>
+
+  <div class="detail-showcase reveal">
+    <div class="detail-gallery">
+      <div class="gallery-main">🐉</div>
+      <div class="gallery-thumbs">
+        <div>
+          <div class="gallery-thumb">🌿</div>
+          <div class="light-label">自然光</div>
+        </div>
+        <div>
+          <div class="gallery-thumb">✨</div>
+          <div class="light-label">暖光</div>
+        </div>
+        <div>
+          <div class="gallery-thumb">🔍</div>
+          <div class="light-label">放大紋理</div>
+        </div>
+        <div>
+          <div class="gallery-thumb">📐</div>
+          <div class="light-label">尺寸對照</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-info">
+      <h3>台灣檜木・手工雕刻</h3>
+      <h2>台灣檜木雲龍擺件</h2>
+
+      <div class="detail-price-block">
+        <div class="detail-price">NT$28,000</div>
+        <div class="detail-price-note">含稅 ・ 含防撞專業包裝 ・ 含溯源鑑定書</div>
+      </div>
+
+      <div class="spec-grid">
+        <div class="spec-item">
+          <div class="spec-key">木材種類</div>
+          <div class="spec-val">台灣檜木 (紅檜)</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-key">木材產地</div>
+          <div class="spec-val">苗栗大湖林班</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-key">含水率</div>
+          <div class="spec-val">11.3%（標準 12% 以下）</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-key">精確重量</div>
+          <div class="spec-val">1.85 公斤</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-key">尺寸（長×寬×高）</div>
+          <div class="spec-val">38 × 18 × 26 cm</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-key">製作工藝師</div>
+          <div class="spec-val">陳大師（從業 30 年）</div>
+        </div>
+      </div>
+
+      <div class="shipping-info">
+        <strong>🛡️ 包裝與物流承諾</strong>
+        採用三層防撞結構：珍珠棉貼身包覆 → 瓦楞紙隔層 → 加強外箱。<br>
+        怕潮：內附防潮包。怕摔：全程保險，到貨破損直接換新。<br>
+        退換貨申請：收到 7 日內，線上一鍵申請，不需要說明原因。
+      </div>
+
+      <button class="btn-primary" style="margin-right:12px" onclick="addToCart(this,'台灣檜木雲龍擺件','NT$28,000')">立即加入購物車</button>
+      <button class="btn-secondary" onclick="showToast('已加入追蹤清單 ♡ 有優惠時會通知您')">加入追蹤清單</button>
+
+      <div style="margin-top:1.5rem; font-size:0.78rem; color:var(--text-light); line-height:1.8;">
+        💡 <strong style="color:var(--text-mid)">AI 保養建議</strong>：每月以微濕棉布輕擦表面，再上薄蠟（推薦蜂蠟或亞麻仁油），避免陽光直曬及空調直吹。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI CONSULTANT -->
+<section id="ai">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">AI 沉浸式導購</div>
+      <h2 class="section-title" style="color:var(--cream)">你的私人木藝生活顧問</h2>
+    </div>
+  </div>
+
+  <div class="ai-interface reveal">
+    <div class="ai-features">
+      <div class="ai-feature active">
+        <div class="ai-feature-icon">🏡</div>
+        <div class="ai-feature-title">居家風格媒合</div>
+        <div class="ai-feature-desc">告訴 AI 你家的燈光、地板材質、主色調，它會推薦最適合的木種與擺件風格，創造「心理所有權」感受。</div>
+      </div>
+      <div class="ai-feature">
+        <div class="ai-feature-icon">🌿</div>
+        <div class="ai-feature-title">即時保養教學</div>
+        <div class="ai-feature-desc">買了之後如何養護？AI 根據您的木種與居家環境，給出個性化的季節性保養行事曆。</div>
+      </div>
+      <div class="ai-feature">
+        <div class="ai-feature-icon">📖</div>
+        <div class="ai-feature-title">木雕工藝 Q&A</div>
+        <div class="ai-feature-desc">圓雕、浮雕、透雕有何不同？各木種特性比較？所有你想知道的木藝知識，隨問隨答。</div>
+      </div>
+      <div class="ai-feature">
+        <div class="ai-feature-icon">🎁</div>
+        <div class="ai-feature-title">禮物選購顧問</div>
+        <div class="ai-feature-desc">送禮對象的身份、預算、偏好，AI 幫你精準篩選，並附上禮物意涵說明，讓你送禮有底氣。</div>
+      </div>
+    </div>
+
+    <div class="ai-chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar">🪵</div>
+        <div>
+          <div class="chat-name">木藝 AI 顧問｜好客商城</div>
+          <div class="chat-status">線上中・平均 3 秒回覆</div>
+        </div>
+      </div>
+
+      <div class="chat-body" id="chatBody">
+        <div class="msg msg-ai">
+          <div class="msg-bubble">
+            您好！我是好客商城的木藝生活顧問 🌿<br><br>
+            告訴我你家的裝潢風格或需求，我幫你找到最適合的木雕作品。您也可以直接點選下方的快速選項！
+          </div>
+          <div class="msg-time">剛剛</div>
+        </div>
+      </div>
+
+      <div class="quick-prompts">
+        <button class="quick-prompt" onclick="sendQuickPrompt(this)">我家是日式風格</button>
+        <button class="quick-prompt" onclick="sendQuickPrompt(this)">送禮預算$3,000</button>
+        <button class="quick-prompt" onclick="sendQuickPrompt(this)">木雕怎麼保養？</button>
+        <button class="quick-prompt" onclick="sendQuickPrompt(this)">檜木 vs 龍眼木</button>
+      </div>
+
+      <div class="chat-input-area">
+        <input class="chat-input" id="chatInput" type="text" placeholder="描述你的居家風格或提問..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="chat-send" onclick="sendChat()">↑</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIP MEMBER -->
+<section id="vip">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">VIP 會員中心</div>
+      <h2 class="section-title">五感體驗，從嗅覺開始</h2>
+    </div>
+  </div>
+
+  <div class="vip-layout reveal">
+    <div class="vip-card">
+      <div class="vip-badge">VIP 尋香計畫</div>
+      <div class="vip-title">當眼睛看到質感，<br>鼻子也要感受溫度</div>
+      <div class="vip-desc">
+        線上購物最遺憾的，是聞不到那一縷木質芬芳。<br>
+        我們將雕刻過程的珍貴邊角料，製成「木質香氛袋」，讓你在決定購買前，先讓嗅覺幫你做決定。
+      </div>
+      <ul class="vip-benefits">
+        <li>符合觸發條件，免費寄送小木塊 / 木屑香氛袋</li>
+        <li>附專屬 VIP 折扣碼，消費享 95 折起</li>
+        <li>每季限量「大師新作」搶先預購資格</li>
+        <li>生日月雙倍點數、滿額禮加碼</li>
+        <li>線下三義實體店 VIP 預約參觀・工藝師面對面</li>
+      </ul>
+      <button class="btn-primary" onclick="showToast('VIP 申請表已送出！我們將於 3 個工作天內聯繫您 🌿')">立即申請 VIP 資格</button>
+    </div>
+
+    <div class="vip-form-side">
+      <div class="sensory-box">
+        <div class="sensory-icon-big">🌲</div>
+        <div class="sensory-title">「尋香」觸發機制</div>
+        <div class="sensory-desc">以下行為發生時，系統將自動判斷並寄出香氛體驗包，讓你的決策更有溫度。</div>
+
+        <div class="trigger-conditions">
+          <div class="trigger-title">行為觸發條件</div>
+          <div class="trigger-item">在商品頁面停留超過 3 分鐘</div>
+          <div class="trigger-item">將商品加入購物車後移除</div>
+          <div class="trigger-item">累積收藏 3 件以上商品</div>
+          <div class="trigger-item">與 AI 顧問討論特定木種超過 5 次</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">您的姓名</label>
+          <input class="form-input" type="text" placeholder="王小明">
+        </div>
+        <div class="form-group">
+          <label class="form-label">電子郵件</label>
+          <input class="form-input" type="email" placeholder="example@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">有興趣的木種（可複選）</label>
+          <select class="form-select">
+            <option>台灣檜木（紅檜・黃檜）</option>
+            <option>龍眼木</option>
+            <option>牛樟木</option>
+            <option>烏心石</option>
+            <option>黑檀木</option>
+          </select>
+        </div>
+        <button class="btn-primary full-btn" onclick="showToast('感謝申請！香氛包將於 5-7 個工作天內寄出，附專屬折扣碼 🌿')">申請尋香體驗包</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- O2O -->
+<section id="o2o">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">O2O 全通路整合</div>
+      <h2 class="section-title">線上看見，三義親臨</h2>
+    </div>
+  </div>
+
+  <div class="o2o-layout reveal">
+    <div>
+      <div class="map-placeholder">
+        <div class="map-overlay">
+          <div class="map-pin">📍</div>
+          <div class="map-info">
+            <strong>展大雕刻行</strong>
+            苗栗縣三義鄉廣盛村<br>
+            勝興路 ×× 號<br>
+            <br>
+            <small>（點我開啟 Google Maps）</small>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:2px">
+        <div class="info-card">
+          <div class="info-card-title">營業時間</div>
+          <div class="info-card-content">週一至週五｜09:00 – 18:00<br>週六週日｜09:00 – 17:30<br>國定假日照常營業</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">交通指引</div>
+          <div class="info-card-content">台13線往三義方向<br>勝興車站附近<br>停車場：店前免費停車</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="store-info">
+      <div class="info-card">
+        <div class="info-card-title">實體參觀說明</div>
+        <div class="info-card-content">
+          親眼看見木紋紋理、親手感受重量手感，是線上圖片無法取代的體驗。<br><br>
+          預約參觀可享：<br>
+          ✦ 工藝師陪同導覽（30 分鐘）<br>
+          ✦ 現場下單享 9 折優惠<br>
+          ✦ 贈送小木雕紀念品一份
+        </div>
+      </div>
+
+      <div class="booking-form">
+        <div class="booking-title">線上預約參觀</div>
+        <div class="form-group">
+          <label class="form-label">姓名</label>
+          <input class="form-input" type="text" placeholder="您的姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">聯絡電話</label>
+          <input class="form-input" type="tel" placeholder="0912-345-678">
+        </div>
+        <div class="form-group">
+          <label class="form-label">希望參觀日期</label>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">希望參觀時段</label>
+          <select class="form-select" style="background:rgba(255,255,255,0.08);border-color:rgba(232,213,183,0.2);color:var(--cream)">
+            <option>上午 10:00</option>
+            <option>上午 11:00</option>
+            <option>下午 14:00</option>
+            <option>下午 15:00</option>
+            <option>下午 16:00</option>
+          </select>
+        </div>
+        <button class="btn-primary full-btn" style="background:var(--accent-gold);color:var(--wood-dark)" onclick="showToast('預約申請已送出！我們將於 24 小時內以電話確認您的參觀時段 🌿')">送出預約申請</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">好客商城 <span>·</span> 三義木雕</div>
+      <div class="footer-tagline">匠心傳承五十年，我們將三義山林的溫度，送到你生活中的每一個角落。</div>
+    </div>
+    <div>
+      <div class="footer-col-title">商品分類</div>
+      <ul class="footer-links">
+        <li><a href="#">客廳擺件</a></li>
+        <li><a href="#">書房文具</a></li>
+        <li><a href="#">茶席美學</a></li>
+        <li><a href="#">宗教藝術</a></li>
+        <li><a href="#">大師精品</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">服務中心</div>
+      <ul class="footer-links">
+        <li><a href="#">訂單查詢</a></li>
+        <li><a href="#">退換貨申請</a></li>
+        <li><a href="#">保養教學</a></li>
+        <li><a href="#">客製雕刻詢問</a></li>
+        <li><a href="#">企業採購</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">關於我們</div>
+      <ul class="footer-links">
+        <li><a href="#">品牌故事</a></li>
+        <li><a href="#">展大雕刻行</a></li>
+        <li><a href="#">三義木雕文化</a></li>
+        <li><a href="#o2o">實體店資訊</a></li>
+        <li><a href="#">聯絡我們</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2024 好客商城・展大雕刻行 版權所有</div>
+    <div>苗栗縣三義鄉廣盛村 | service@haoke-woodcraft.com</div>
+  </div>
+</footer>
+
+<!-- CART OVERLAY & DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-head">
+    <div class="cart-drawer-title">
+      🛒 購物車
+      <span class="cart-count-label" id="cartCountLabel">（0 件商品）</span>
+    </div>
+    <button class="cart-close-btn" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty-icon">🪵</div>
+      <div class="cart-empty-text">購物車還是空的<br>去挑選你喜愛的木雕作品吧！</div>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="free-shipping-bar">
+      <div class="free-shipping-fill" id="shippingFill" style="width:0%"></div>
+    </div>
+    <div class="free-shipping-note" id="shippingNote">滿 NT$3,000 享免運費</div>
+    <div class="cart-summary">
+      <div class="cart-summary-row">
+        <span>商品小計</span>
+        <span id="subtotalVal">NT$0</span>
+      </div>
+      <div class="cart-summary-row">
+        <span>運費</span>
+        <span id="shippingVal">NT$120</span>
+      </div>
+      <div class="cart-summary-row" id="discountRow" style="display:none;color:var(--accent-moss)">
+        <span>折扣</span>
+        <span id="discountVal">-NT$0</span>
+      </div>
+      <div class="cart-summary-row total">
+        <span>總計</span>
+        <span id="totalVal">NT$0</span>
+      </div>
+    </div>
+    <a class="cart-checkout-btn" id="checkoutBtn" href="checkout.html">前往結帳 →</a>
+    <button class="cart-continue-btn" onclick="closeCart()">繼續購物</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== PRODUCT CATALOG (single source of truth) =====
+  const PRODUCTS = {
+    'p1': { id:'p1', name:'龍眼木茶盤擺件', wood:'龍眼木・茶席', price:2800, icon:'🍵', category:'茶席', badge:'熱銷', bg:'linear-gradient(135deg,#e8d5b7,#c8935a)' },
+    'p2': { id:'p2', name:'烏心石筆筒',     wood:'烏心石・文具', price:680,  icon:'🖊️', category:'書房', badge:'',   bg:'linear-gradient(135deg,#d4b896,#a07040)' },
+    'p3': { id:'p3', name:'台灣檜木雲龍擺件',wood:'檜木・立體雕刻',price:28000,icon:'🐉', category:'客廳', badge:'精品', bg:'linear-gradient(135deg,#c8935a,#7a4f2e)' },
+    'p4': { id:'p4', name:'相思木茶葉罐',   wood:'相思木・茶具', price:1200, icon:'🌿', category:'茶席', badge:'',   bg:'linear-gradient(135deg,#e0c8a0,#b8902a)' },
+    'p5': { id:'p5', name:'牛樟木神明像',   wood:'牛樟木・宗教', price:85000,icon:'🙏', category:'宗教', badge:'傳承', bg:'linear-gradient(135deg,#f0d4a0,#c8802a)' },
+    'p6': { id:'p6', name:'黑檀木名片座',   wood:'黑檀木・文具', price:890,  icon:'📐', category:'書房', badge:'',   bg:'linear-gradient(135deg,#d8c0a0,#9a7050)' },
+  };
+
+  const FREE_SHIPPING_THRESHOLD = 3000;
+  const SHIPPING_FEE = 120;
+
+  // ===== CART STATE (localStorage) =====
+  function getCart() {
+    try { return JSON.parse(localStorage.getItem('haoke_cart') || '{}'); }
+    catch { return {}; }
+  }
+  function saveCart(cart) {
+    localStorage.setItem('haoke_cart', JSON.stringify(cart));
+  }
+  function getTotalItems(cart) {
+    return Object.values(cart).reduce((s, i) => s + i.qty, 0);
+  }
+  function getSubtotal(cart) {
+    return Object.values(cart).reduce((s, i) => s + i.price * i.qty, 0);
+  }
+
+  // ===== CART UI =====
+  function openCart() {
+    document.getElementById('cartOverlay').classList.add('open');
+    document.getElementById('cartDrawer').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    renderCart();
+  }
+  function closeCart() {
+    document.getElementById('cartOverlay').classList.remove('open');
+    document.getElementById('cartDrawer').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function renderCart() {
+    const cart = getCart();
+    const keys = Object.keys(cart);
+    const body = document.getElementById('cartBody');
+    const empty = document.getElementById('cartEmpty');
+    const footer = document.getElementById('cartFooter');
+    const subtotal = getSubtotal(cart);
+    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+    const total = subtotal + shipping;
+    const pct = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+
+    // Badge & count
+    const totalItems = getTotalItems(cart);
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = totalItems;
+    badge.classList.toggle('show', totalItems > 0);
+    document.getElementById('cartCountLabel').textContent = `（${totalItems} 件商品）`;
+
+    if (keys.length === 0) {
+      empty.style.display = 'flex';
+      footer.style.display = 'none';
+      // clear items
+      Array.from(body.querySelectorAll('.cart-item')).forEach(el => el.remove());
+      return;
+    }
+
+    empty.style.display = 'none';
+    footer.style.display = 'block';
+
+    // Render items
+    Array.from(body.querySelectorAll('.cart-item')).forEach(el => el.remove());
+    keys.forEach(pid => {
+      const item = cart[pid];
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+      div.id = `ci-${pid}`;
+      div.innerHTML = `
+        <div class="cart-item-thumb" style="background:${item.bg}"><img src="${item.img}" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="cart-item-info">
+          <div class="cart-item-wood">${item.wood}</div>
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-qty">
+            <button class="qty-btn" onclick="changeQty('${pid}',-1)">−</button>
+            <span class="qty-num" id="qty-${pid}">${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty('${pid}',1)">+</button>
+          </div>
+        </div>
+        <div class="cart-item-right">
+          <div class="cart-item-price">NT$${(item.price * item.qty).toLocaleString()}</div>
+          <button class="cart-item-remove" onclick="removeItem('${pid}')">移除</button>
+        </div>`;
+      body.insertBefore(div, empty);
+    });
+
+    // Summary
+    document.getElementById('subtotalVal').textContent = `NT$${subtotal.toLocaleString()}`;
+    document.getElementById('shippingVal').textContent = shipping === 0 ? '免運費 🎉' : `NT$${shipping}`;
+    document.getElementById('totalVal').textContent = `NT$${total.toLocaleString()}`;
+    document.getElementById('shippingFill').style.width = pct + '%';
+    const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+    document.getElementById('shippingNote').textContent =
+      subtotal >= FREE_SHIPPING_THRESHOLD
+        ? '✓ 已達免運門檻！'
+        : `再購 NT$${remaining.toLocaleString()} 即享免運費`;
+  }
+
+  function updateBadgeOnly() {
+    const cart = getCart();
+    const totalItems = getTotalItems(cart);
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = totalItems;
+    badge.classList.toggle('show', totalItems > 0);
+  }
+
+  // ===== CART ACTIONS =====
+  function addToCart(btn, name, priceStr) {
+    // find product id from btn's closest product-card
+    const card = btn.closest('.product-card');
+    const pid = card ? card.dataset.pid : null;
+    if (!pid || !PRODUCTS[pid]) return;
+    const product = PRODUCTS[pid];
+
+    const cart = getCart();
+    if (cart[pid]) {
+      cart[pid].qty += 1;
+    } else {
+      cart[pid] = { ...product, qty: 1 };
+    }
+    saveCart(cart);
+    updateBadgeOnly();
+
+    // Button feedback
+    const orig = btn.textContent;
+    btn.textContent = '✓ 已加入';
+    btn.style.background = 'var(--accent-moss)';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
+
+    showToast(`「${product.name}」已加入購物車 🌿`);
+  }
+
+  function changeQty(pid, delta) {
+    const cart = getCart();
+    if (!cart[pid]) return;
+    cart[pid].qty += delta;
+    if (cart[pid].qty <= 0) {
+      delete cart[pid];
+    }
+    saveCart(cart);
+    renderCart();
+  }
+
+  function removeItem(pid) {
+    const cart = getCart();
+    const el = document.getElementById(`ci-${pid}`);
+    if (el) { el.style.opacity = '0'; el.style.transform = 'translateX(30px)'; el.style.transition = 'all 0.25s'; }
+    setTimeout(() => {
+      delete cart[pid];
+      saveCart(cart);
+      renderCart();
+    }, 250);
+  }
+
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ===== SCROLL REVEAL =====
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => observer.observe(el));
+
+  // ===== FILTER PRODUCTS =====
+  function filterProducts(btn, cat) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.style.display = (cat === 'all' || card.dataset.category === cat) ? '' : 'none';
+    });
+  }
+
+  // ===== AI CHAT =====
+  const aiResponses = {
+    '我家是日式風格': '日式風格最適合「龍眼木」或「烏心石」🌿\n\n龍眼木的細膩紋路，在暖色調燈光下有種禪意的沉穩感；建議搭配茶盤或書房筆筒。\n\n若喜歡深色調，烏心石的沉穩質感也非常適合侘寂美學。要不要我為你篩選商品？',
+    '送禮預算$3,000': '預算 NT$3,000 的好禮推薦 🎁\n\n1. 龍眼木茶盤擺件（NT$2,800）— 附產地證書，送給懂品味的長輩最適合\n2. 相思木茶葉罐（NT$1,200）× 2 件 — 組合送禮，視覺豐富\n3. 烏心石筆筒（NT$680）+ 黑檀名片座（NT$890）— 辦公室組合，超值！\n\n需要我幫你搭配包裝文案嗎？',
+    '木雕怎麼保養？': '木雕日常保養小指南 🌲\n\n「每月一次微濕棉布輕擦，再薄薄上一層蜂蠟或亞麻仁油」就夠了！\n\n注意：\n✦ 避免陽光直曬（會裂）\n✦ 遠離冷氣出風口（太乾燥）\n✦ 怕潮濕（台灣梅雨季可放防潮箱）\n\n不同木種保養細節略有差異，告訴我你有哪件作品，我給你專屬建議！',
+    '檜木 vs 龍眼木': '兩種木材的性格截然不同 🪵\n\n🟫 台灣檜木\n• 香氣持久，天然殺蟲效果\n• 紋理優美，顏色偏紅黃\n• 稀有珍貴，適合傳家之寶\n\n🟤 龍眼木\n• 質地緻密，手感溫潤\n• 紋理細膩如行雲流水\n• 價格親民，性價比高\n\n預算充足選檜木，日常把玩選龍眼木！需要推薦具體商品嗎？'
+  };
+  function addMessage(text, isUser) {
+    const body = document.getElementById('chatBody');
+    const div = document.createElement('div');
+    div.className = `msg ${isUser ? 'msg-user' : 'msg-ai'}`;
+    div.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">剛剛</div>`;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+  function sendChat() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage(text, true);
+    input.value = '';
+    setTimeout(() => {
+      const reply = Object.keys(aiResponses).find(k => text.includes(k.replace('$','').substring(0,4)));
+      addMessage(reply ? aiResponses[reply] : `感謝您的提問：「${text}」\n\n目前 AI 顧問正在為您整合最適合的建議，請稍候…\n\n（完整 AI 功能上線後，將接入 Claude API 即時回覆）`, false);
+    }, 800);
+  }
+  function sendQuickPrompt(btn) {
+    const text = btn.textContent;
+    addMessage(text, true);
+    setTimeout(() => {
+      const reply = aiResponses[text] || '感謝您的詢問！我正在為您整理最合適的建議…';
+      addMessage(reply, false);
+    }, 600);
+  }
+
+  // ===== NAV SCROLL EFFECT =====
+  window.addEventListener('scroll', () => {
+    document.querySelector('nav').style.boxShadow =
+      window.scrollY > 50 ? '0 4px 24px rgba(61,43,31,0.1)' : 'none';
+  });
+
+  // ===== INIT =====
+  updateBadgeOnly();
+</script>
+</body>
+</html>
